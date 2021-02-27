@@ -1,6 +1,5 @@
 package ua.goit.online.stream.collector;
 
-import ua.goit.online.stream.Student;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -9,31 +8,31 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-public class MinAndMaxCollector implements Collector<Student, MinAndMaxCollector.CustomAccumulator<Student>, MinAndMaxCollector.Pair<Student>> {
+public class MinAndMaxCollector<T> implements Collector<T, MinAndMaxCollector.CustomAccumulator<T>, MinAndMaxCollector.Pair<T>> {
 
-    private Comparator<Student> comparator;
+    private final Comparator<T> comparator;
 
-    public MinAndMaxCollector(Comparator<Student> comparator) {
+    public MinAndMaxCollector(Comparator<T> comparator) {
         this.comparator = comparator;
     }
 
     @Override
-    public Supplier<CustomAccumulator<Student>> supplier() {
+    public Supplier<CustomAccumulator<T>> supplier() {
         return () -> new CustomAccumulator<>(comparator);
     }
 
     @Override
-    public BiConsumer<CustomAccumulator<Student>, Student> accumulator() {
+    public BiConsumer<CustomAccumulator<T>, T> accumulator() {
         return CustomAccumulator::accumulate;
     }
 
     @Override
-    public BinaryOperator<CustomAccumulator<Student>> combiner() {
+    public BinaryOperator<CustomAccumulator<T>> combiner() {
         return CustomAccumulator::combine;
     }
 
     @Override
-    public Function<MinAndMaxCollector.CustomAccumulator<Student>, MinAndMaxCollector.Pair<Student>> finisher() {
+    public Function<MinAndMaxCollector.CustomAccumulator<T>, MinAndMaxCollector.Pair<T>> finisher() {
         return CustomAccumulator::toMinMaxPair;
     }
 
@@ -42,47 +41,47 @@ public class MinAndMaxCollector implements Collector<Student, MinAndMaxCollector
         return Collections.emptySet();
     }
 
-    public static class CustomAccumulator<Student> {
-        private final Comparator<Student> comparator;
+    public static class CustomAccumulator<T> {
+        private final Comparator<T> comparator;
 
-        private Student min = null;
-        private Student max = null;
+        private T min = null;
+        private T max = null;
 
-        public CustomAccumulator(Comparator<Student> comparator) {
+        public CustomAccumulator(Comparator<T> comparator) {
             this.comparator = comparator;
         }
 
-        public void accumulate(Student other) {
+        public void accumulate(T other) {
             min = (min == null || comparator.compare(other, min) < 0) ? other : min;
             max = (max == null || comparator.compare(other, max) > 0) ? other : max;
         }
 
-        public CustomAccumulator<Student> combine(CustomAccumulator<Student> other) {
-            Pair<Student> otherPair = other.toMinMaxPair();
+        public CustomAccumulator<T> combine(CustomAccumulator<T> other) {
+            Pair<T> otherPair = other.toMinMaxPair();
             otherPair.getMin().ifPresent(this::accumulate);
             otherPair.getMax().ifPresent(this::accumulate);
             return this;
         }
 
-        public Pair<Student> toMinMaxPair() {
-            return new Pair<Student>(min, max);
+        public Pair<T> toMinMaxPair() {
+            return new Pair<T>(min, max);
         }
     }
 
-    public static class Pair<Student> {
-        private final Optional<Student> min;
-        private final Optional<Student> max;
+    public static class Pair<T> {
+        private final Optional<T> min;
+        private final Optional<T> max;
 
-        public Pair(Student min, Student max) {
+        public Pair(T min, T max) {
             this.min = Optional.ofNullable(min);
             this.max = Optional.ofNullable(max);
         }
 
-        public Optional<Student> getMin() {
+        public Optional<T> getMin() {
             return min;
         }
 
-        public Optional<Student> getMax() {
+        public Optional<T> getMax() {
             return max;
         }
     }
