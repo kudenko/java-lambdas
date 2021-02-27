@@ -9,8 +9,8 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         List<Student> students = getStudents();
-        final MinAndMaxCollector.Pair<Student> collect = students.stream()
-                .collect(new MinAndMaxCollector(Comparator.comparing(student -> student.getFirstName().length())));
+        MinAndMaxCollector.Pair<Student> collect = students.stream()
+                .collect(new MinAndMaxCollector<>(Comparator.comparing(Student::getFirstName)));
 
         System.out.println(collect.getMin());
         System.out.println(collect.getMax());

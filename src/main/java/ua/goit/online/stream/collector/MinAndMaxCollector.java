@@ -10,9 +10,9 @@ import java.util.stream.Collector;
 
 public class MinAndMaxCollector<T> implements Collector<T, MinAndMaxCollector.CustomAccumulator<T>, MinAndMaxCollector.Pair<T>> {
 
-    private final Comparator<T> comparator;
+    private final Comparator<? super T> comparator;
 
-    public MinAndMaxCollector(Comparator<T> comparator) {
+    public MinAndMaxCollector(Comparator<? super T> comparator) {
         this.comparator = comparator;
     }
 
@@ -32,7 +32,7 @@ public class MinAndMaxCollector<T> implements Collector<T, MinAndMaxCollector.Cu
     }
 
     @Override
-    public Function<MinAndMaxCollector.CustomAccumulator<T>, MinAndMaxCollector.Pair<T>> finisher() {
+    public Function<CustomAccumulator<T>, Pair<T>> finisher() {
         return CustomAccumulator::toMinMaxPair;
     }
 
@@ -42,12 +42,12 @@ public class MinAndMaxCollector<T> implements Collector<T, MinAndMaxCollector.Cu
     }
 
     public static class CustomAccumulator<T> {
-        private final Comparator<T> comparator;
+        private final Comparator<? super T> comparator;
 
         private T min = null;
         private T max = null;
 
-        public CustomAccumulator(Comparator<T> comparator) {
+        public CustomAccumulator(Comparator<? super T> comparator) {
             this.comparator = comparator;
         }
 
@@ -64,7 +64,7 @@ public class MinAndMaxCollector<T> implements Collector<T, MinAndMaxCollector.Cu
         }
 
         public Pair<T> toMinMaxPair() {
-            return new Pair<T>(min, max);
+            return new Pair<>(min, max);
         }
     }
 
