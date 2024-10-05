@@ -1,6 +1,0 @@
-ex5:
-1. Should be Map<Integer, String> or Integer <List<Student?>>
-2. grouping and printing should be in one stream?
-
-ex7:
-Is it Ok with Optional class?
